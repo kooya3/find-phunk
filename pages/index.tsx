@@ -1,12 +1,14 @@
 import * as React from "react";
+import Image from "next/image";
 import isToday from "date-fns/isToday";
 import endOfDay from "date-fns/endOfDay";
 import Countdown, { CountdownRenderProps, zeroPad } from "react-countdown";
-import { PieChart, Pie, Cell, ResponsiveContainer, PieLabel } from "recharts";
+import { PieChart, Pie, Cell, PieLabel } from "recharts";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
 import * as Popover from "@radix-ui/react-popover";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Cross2Icon,
@@ -143,9 +145,31 @@ type A = {
  * ANIMATIONS
  */
 
+const fadeIn = keyframes({
+  "0%": { opacity: 0 },
+  "100%": { opacity: 1 },
+});
+
+const fadeToWrong = keyframes({
+  "100%": { background: "$gray9", color: "$gray1" },
+});
+
+const fadeToAlmost = keyframes({
+  "100%": { background: "$yellow9", color: "$gray1" },
+});
+
+const fadeToCorrect = keyframes({
+  "100%": { background: "$grass10", color: "$gray1" },
+});
+
 const scaleIn = keyframes({
   "0%": { opacity: 0, transform: "scale(0.5)" },
   "100%": { opacity: 1, transform: "scale(1)" },
+});
+
+const scaleSuccessIn = keyframes({
+  "0%": { transform: "scale(0.5) translateX(-50%)" },
+  "100%": { transform: "scale(1) translateX(-50%)" },
 });
 
 const rotateX = keyframes({
@@ -188,6 +212,10 @@ const Main = styled("main", {
   marginTop: "$space$3",
   marginBottom: "$space$3",
   marginLeft: "8px",
+
+  "&[data-complete='true']": {
+    pointerEvents: "none",
+  },
 });
 
 const AboutButton = styled(Popover.Trigger, {
@@ -202,6 +230,7 @@ const AboutContent = styled(Popover.Content, {
   position: "relative",
   maxWidth: "calc(100vw - $space$2)",
   padding: "$space$2",
+  marginBottom: "$space$2",
   borderRadius: "4px",
   boxShadow: "rgb(0, 0, 0, .18) 0px 2px 4px",
   animation: `${scaleIn} 320ms cubic-bezier(0.16, 1, 0.3, 1)`,
@@ -213,6 +242,7 @@ const Divider = styled(Separator.Root, {
   width: "75%",
   height: "1px",
   backgroundColor: "$gray6",
+  margin: "$space$1 0",
 });
 
 const AboutClose = styled(Popover.Close, {
@@ -245,6 +275,7 @@ const Button = styled("button", {
   color: "$gray12",
   cursor: "pointer",
   transition: "color 200ms linear",
+  position: "relative",
 
   "&:hover:not([aria-disabled='true'])": {
     background: "$gray4",
@@ -256,22 +287,16 @@ const Button = styled("button", {
 
   "&[aria-disabled='true']": {
     cursor: "not-allowed",
-    color: "$gray2",
-    animation: `${rotateX} 500ms cubic-bezier(0.16, 1, 0.3, 1)`,
-    background: "$gray9",
+    animation: `${rotateX} 600ms cubic-bezier(0.75,1,0.75,1) 100ms, ${fadeToWrong} 200ms cubic-bezier(0.16, 1, 0.3, 1) 350ms forwards`,
   },
 
   "&[data-almost='true']": {
-    background: "$yellow10",
-    color: "$gray1",
-    opacity: 0.9,
+    animation: `${rotateX} 600ms cubic-bezier(0.75,1,0.75,1) 100ms, ${fadeToAlmost} 200ms cubic-bezier(0.16, 1, 0.3, 1) 350ms forwards`,
   },
 
   "&[data-correct='true']": {
-    background: "$grass10",
-    color: "$gray1",
     cursor: "default",
-    opacity: "1",
+    animation: `${rotateX} 600ms cubic-bezier(0.75,1,0.75,1) 100ms, ${fadeToCorrect} 200ms cubic-bezier(0.16, 1, 0.3, 1) 350ms forwards`,
   },
 
   "&:disabled": {
@@ -333,26 +358,47 @@ const Status = styled("div", {
 const SuccessOverlay = styled(Dialog.Overlay, {
   position: "fixed",
   inset: "0",
-  display: "grid",
-  placeItems: "center",
-  overflowY: "auto",
   background: "$colors$overlay",
+  animation: `${fadeIn} 320ms ease-out forwards`,
+  opacity: 0,
 });
 
 const SuccessContent = styled(Dialog.Content, {
-  position: "relative",
-  display: "flex",
-  flexFlow: "column",
-  alignItems: "center",
-  gap: "$space$3",
-  width: "100%",
+  position: "fixed",
+  inset: "0 50%",
+  transform: "translateX(-50%)",
+  margin: "$space$2",
+  width: "calc(100% - $space$2 * 2)",
   maxWidth: "600px",
+  height: "calc(100% - $space$2 * 2)",
   boxShadow: "0 4px 23px 0 rgb(0 0 0 / 20%)",
   background: "$gray2",
+  animation: `${scaleSuccessIn} 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards`,
   color: "$gray12",
-  margin: "$space$4 $space$2",
-  padding: "$space$4 $space$2",
-  animation: `${scaleIn} 320ms cubic-bezier(0.16, 1, 0.3, 1)`,
+
+  "@media screen and (min-height: 1100px)": {
+    height: "fit-content",
+    maxHeight: "none",
+  },
+});
+
+const SuccessAreaRoot = styled(ScrollArea.Root, {
+  width: "100%",
+  height: "100%",
+});
+
+const SuccessAreaViewport = styled(ScrollArea.Viewport, {
+  width: "100%",
+  height: "100%",
+
+  "& > div": {
+    width: "100%",
+    display: "flex !important",
+    flexFlow: "column",
+    alignItems: "center",
+    gap: "$space$2",
+    padding: "$space$4 $space$2",
+  },
 
   "& h3": {
     color: "$gray11",
@@ -370,6 +416,14 @@ const SuccessClose = styled(Dialog.Close, {
   "&:hover": {
     color: "$gray12",
   },
+});
+
+const SuccessSection = styled("span", {
+  display: "flex",
+  flexFlow: "column",
+  gap: "$space$1",
+  alignItems: "center",
+  textAlign: "center",
 });
 
 const Statistics = styled("div", {
@@ -432,6 +486,11 @@ const tooltipContent = css({
   borderRadius: "4px",
   py: "$space$1",
   px: "$space$2",
+});
+
+const imageContent = css({
+  animation: `${fadeIn} 200ms linear forwards 350ms`,
+  opacity: 0,
 });
 
 /*****************************
@@ -608,7 +667,10 @@ const Home: NextPage = () => {
 
   if (status === "loaded" && latestGuess === answer) {
     dispatch({ type: "success" });
-    setIsSuccessModalOpen(true);
+
+    setTimeout(() => {
+      setIsSuccessModalOpen(true);
+    }, 2000);
   }
 
   /* Local storage management */
@@ -754,7 +816,14 @@ const Home: NextPage = () => {
                 <Divider decorative />
 
                 <Status>
-                  <Button data-correct disabled css={{ flex: "0 1 auto" }}>
+                  <Button
+                    disabled
+                    css={{
+                      flex: "0 1 auto",
+                      background: "$grass10",
+                      color: "$gray1",
+                    }}
+                  >
                     A
                   </Button>
 
@@ -765,7 +834,14 @@ const Home: NextPage = () => {
                 </Status>
 
                 <Status>
-                  <Button data-almost disabled css={{ flex: "0 1 auto" }}>
+                  <Button
+                    disabled
+                    css={{
+                      flex: "0 1 auto",
+                      background: "$yellow9",
+                      color: "$gray1",
+                    }}
+                  >
                     B
                   </Button>
 
@@ -776,7 +852,14 @@ const Home: NextPage = () => {
                 </Status>
 
                 <Status>
-                  <Button aria-disabled disabled css={{ flex: "0 1 auto" }}>
+                  <Button
+                    disabled
+                    css={{
+                      flex: "0 1 auto",
+                      background: "$gray9",
+                      color: "$gray2",
+                    }}
+                  >
                     C
                   </Button>
 
@@ -829,17 +912,26 @@ const Home: NextPage = () => {
             <p>Loading....</p>
           </Main>
         ) : (
-          <Main>
+          <Main data-complete={status === "complete"}>
             {LETTERS.map((letter) => (
               <Button
                 key={letter}
-                disabled={status === "complete"}
                 aria-disabled={options.includes(letter)}
                 data-almost={isInRange(letter)}
                 data-correct={status === "complete" && answer === letter}
                 onClick={() => dispatch({ type: "guess", guess: letter })}
               >
-                {letter.toUpperCase()}
+                {status === "complete" && answer === letter ? (
+                  <Image
+                    className={imageContent()}
+                    src="/images/ooft.png"
+                    alt=""
+                    width="100%"
+                    height="100%"
+                  />
+                ) : (
+                  <span>{letter.toUpperCase()}</span>
+                )}
               </Button>
             ))}
           </Main>
@@ -899,47 +991,32 @@ const Home: NextPage = () => {
           onOpenChange={() => setIsSuccessModalOpen(!isSuccessModalOpen)}
         >
           <Dialog.Portal>
-            <SuccessOverlay>
-              <SuccessContent>
-                <SuccessClose>
-                  <Cross2Icon width={24} height={24} />
-                  <VisuallyHidden>Close</VisuallyHidden>
-                </SuccessClose>
+            <SuccessOverlay />
 
-                <Dialog.Title>Congratulations!</Dialog.Title>
+            <SuccessContent>
+              <SuccessClose>
+                <Cross2Icon width={24} height={24} />
+                <VisuallyHidden>Close</VisuallyHidden>
+              </SuccessClose>
 
-                <Dialog.Description>
-                  You have solved todays puzzle
-                </Dialog.Description>
+              <SuccessAreaRoot>
+                <SuccessAreaViewport>
+                  <SuccessSection>
+                    <Dialog.Title>Congratulations</Dialog.Title>
 
-                <Divider decorative />
+                    <Dialog.Description>
+                      You have solved todays puzzle!
+                    </Dialog.Description>
+                  </SuccessSection>
 
-                <h3>Statistics</h3>
+                  <ShareButton onClick={handleShare}>
+                    Share <Share1Icon width={24} height={24} />
+                  </ShareButton>
 
-                <Statistics>
-                  <Statistic>
-                    <div>{attempts}</div>
-                    <p>Today</p>
-                  </Statistic>
-                  <Statistic>
-                    <div>{averageResult}</div>
-                    <p>Average</p>
-                  </Statistic>
-                  <Statistic>
-                    <div>{bestResult}</div>
-                    <p>Best</p>
-                  </Statistic>
-                </Statistics>
+                  <Divider decorative />
 
-                <Divider decorative />
+                  <h3>Statistics</h3>
 
-                <h3>Distribution</h3>
-
-                <div
-                  style={{
-                    minHeight: "200px",
-                  }}
-                >
                   <PieChart height={250} width={250}>
                     <Pie
                       data={chartData}
@@ -958,21 +1035,50 @@ const Home: NextPage = () => {
                       ))}
                     </Pie>
                   </PieChart>
-                </div>
 
-                <Divider decorative />
+                  <SuccessSection>
+                    <h4>Total Attempts</h4>
 
-                <h3>Next available</h3>
+                    <Statistic>
+                      <div>{history.length}</div>
+                    </Statistic>
+                  </SuccessSection>
 
-                <Countdown date={expires} renderer={countdownRenderer} />
+                  <SuccessSection>
+                    <h4>Guess Distribution</h4>
 
-                <Divider decorative />
+                    <Statistics>
+                      <Statistic>
+                        <div>{attempts}</div>
+                        <p>Today</p>
+                      </Statistic>
 
-                <ShareButton onClick={handleShare}>
-                  Share <Share1Icon width={24} height={24} />
-                </ShareButton>
-              </SuccessContent>
-            </SuccessOverlay>
+                      <Statistic>
+                        <div>{averageResult}</div>
+                        <p>Average</p>
+                      </Statistic>
+
+                      <Statistic>
+                        <div>{bestResult}</div>
+                        <p>Best</p>
+                      </Statistic>
+                    </Statistics>
+                  </SuccessSection>
+
+                  <Divider decorative />
+
+                  <h3>Next available</h3>
+
+                  <Countdown date={expires} renderer={countdownRenderer} />
+
+                  <ScrollArea.Scrollbar orientation="vertical">
+                    <ScrollArea.Thumb />
+                  </ScrollArea.Scrollbar>
+
+                  <ScrollArea.Corner />
+                </SuccessAreaViewport>
+              </SuccessAreaRoot>
+            </SuccessContent>
           </Dialog.Portal>
         </Dialog.Root>
       </Tooltip.Provider>
