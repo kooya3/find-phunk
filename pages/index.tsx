@@ -631,10 +631,10 @@ const Home: NextPage = () => {
     const handleKeyPress = (e: KeyboardEvent) =>
       dispatch({ type: "guess", guess: e.key });
 
-    window.addEventListener("keeypress", handleKeyPress, false);
+    window.addEventListener("keypress", handleKeyPress, false);
 
     return () => {
-      window.addEventListener("keeypress", handleKeyPress, false);
+      window.addEventListener("keypress", handleKeyPress, false);
     };
   }, []);
 
