@@ -495,7 +495,7 @@ const Home: NextPage = () => {
   const [isTutorialOpen, setIsTutorialOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const { status, answer, options, history, attempts, expires, theme } = state;
-  const latestGuess = options.length ? options.at(-1) : null;
+  const latestGuess = options.length ? options[options.length - 1] : null;
 
   /* Statistics */
   const sortedHistory = history.sort();
