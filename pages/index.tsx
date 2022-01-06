@@ -256,12 +256,18 @@ const Button = styled("button", {
 
   "&[aria-disabled='true']": {
     cursor: "not-allowed",
-    color: "$gray9",
+    color: "$gray2",
     animation: `${rotateX} 500ms cubic-bezier(0.16, 1, 0.3, 1)`,
-    border: "none",
+    background: "$gray9",
   },
 
-  "&[data-selected='true']": {
+  "&[data-almost='true']": {
+    background: "$yellow10",
+    color: "$gray1",
+    opacity: 0.9,
+  },
+
+  "&[data-correct='true']": {
     background: "$grass10",
     color: "$gray1",
     cursor: "default",
@@ -566,7 +572,8 @@ const Home: NextPage = () => {
       }
 
       if (options.includes(letter)) {
-        return "🟨";
+        const isInRange = getClose(letter);
+        return isInRange ? "🟨" : "🔳";
       }
 
       return theme === lightTheme ? "⬜" : "⬛";
@@ -583,6 +590,16 @@ const Home: NextPage = () => {
       () => window.alert("Copied to clipboard!"),
       () => window.alert("Uh-oh! Something went wrong! Please try again.")
     );
+  }
+
+  function getClose(letter: string) {
+    const isGuessed = options.includes(letter);
+    const answerIndex = LETTERS.indexOf(answer);
+    const letterIndex = LETTERS.indexOf(letter);
+    const isInRange =
+      letterIndex >= answerIndex - 5 && letterIndex <= answerIndex + 5;
+
+    return isGuessed && isInRange;
   }
 
   if (status === "idle") {
@@ -717,23 +734,27 @@ const Home: NextPage = () => {
               </AboutClose>
 
               <ContentContainer>
-                <h2>How to play</h2>
+                <h2>Welcome to Letterle!</h2>
 
-                <p>Guess the letter in as few attempts as possible!</p>
+                <p>
+                  The aim of the game is to find the hidden letter in as few
+                  attempts as possible!
+                </p>
 
                 <p>
                   After each guess, the color of the letter will change to show
                   if you correctly guessed the letter.
                 </p>
 
+                <p>
+                  The game will end when you successfully uncover the hidden
+                  letter.
+                </p>
+
                 <Divider decorative />
 
                 <Status>
-                  <Button
-                    data-selected
-                    disabled
-                    css={{ pointerEvents: "none", flex: "0 1 auto" }}
-                  >
+                  <Button data-correct disabled css={{ flex: "0 1 auto" }}>
                     A
                   </Button>
 
@@ -744,31 +765,35 @@ const Home: NextPage = () => {
                 </Status>
 
                 <Status>
-                  <Button
-                    aria-disabled
-                    disabled
-                    css={{ pointerEvents: "none", flex: "0 1 auto" }}
-                  >
+                  <Button data-almost disabled css={{ flex: "0 1 auto" }}>
                     B
                   </Button>
 
                   <p>
-                    The letter <span style={{ fontWeight: 600 }}>B</span> is an
-                    incorrect guess, and is not the correct letter
+                    The letter <span style={{ fontWeight: 600 }}>B</span> is
+                    within five characters of the correct letter
                   </p>
                 </Status>
 
                 <Status>
-                  <Button
-                    disabled
-                    css={{ pointerEvents: "none", flex: "0 1 auto" }}
-                  >
+                  <Button aria-disabled disabled css={{ flex: "0 1 auto" }}>
                     C
                   </Button>
 
                   <p>
-                    The letter <span style={{ fontWeight: 600 }}>C</span> has
-                    not yet been guessed
+                    The letter <span style={{ fontWeight: 600 }}>C</span> is an
+                    incorrect guess
+                  </p>
+                </Status>
+
+                <Status>
+                  <Button disabled css={{ flex: "0 1 auto" }}>
+                    D
+                  </Button>
+
+                  <p>
+                    The letter <span style={{ fontWeight: 600 }}>D</span> has
+                    not yet been selected
                   </p>
                 </Status>
 
@@ -810,7 +835,8 @@ const Home: NextPage = () => {
                 key={letter}
                 disabled={status === "complete"}
                 aria-disabled={options.includes(letter)}
-                data-selected={status === "complete" && answer === letter}
+                data-almost={getClose(letter)}
+                data-correct={status === "complete" && answer === letter}
                 onClick={() => dispatch({ type: "guess", guess: letter })}
               >
                 {letter.toUpperCase()}

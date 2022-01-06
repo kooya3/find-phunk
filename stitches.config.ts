@@ -113,7 +113,7 @@ export const globalStyles = globalCss({
   html: { height: "100%" },
   body: {
     height: "100%",
-    background: "$gray2",
+    background: "$gray1",
     fontFamily: "Lato",
     lineHeight: "1",
     "-webkit-font-smoothing": "antialiased",
