@@ -504,12 +504,12 @@ const initialState: S = {
   attempts: 0,
   history: [],
   expires: (() => endOfDay(new Date()))(),
-  theme: "light",
+  theme: "dark",
 };
 
 const reducer = (
   state: S,
-  { type, data = {}, guess = "", theme = "light" }: A
+  { type, data = {}, guess = "", theme = "dark" }: A
 ): S => {
   switch (type) {
     case "init":
@@ -571,7 +571,7 @@ const Home: NextPage = () => {
     completed,
   }: CountdownRenderProps) => {
     return completed ? (
-      <p> New Letterle available! Refresh to get started!</p>
+      <p> New Find Phunk available! Refresh to get started!</p>
     ) : (
       <Timer>
         {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
@@ -637,12 +637,13 @@ const Home: NextPage = () => {
       return theme === lightTheme ? "⬜" : "⬛";
     });
 
-    const title = `Letterle  #${history.length}  ${attempts}/${KEYBOARD_LAYOUT.length}`;
+    const title = `Find Phunk  #${history.length}  ${attempts}/${KEYBOARD_LAYOUT.length}`;
     const stats = `Average (${averageResult})  |  Personal Best (${bestResult})`;
     const rowOne = squareKeys.slice(0, 10).join(" ");
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
-    const copy = `${title}\n\n${stats}\n\n${rowOne}\n${rowTwo}\n${rowThree}`;
+    const site = "https://ajames.dev/letterle";
+    const copy = `${title}\n\n${stats}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n${site}`;
 
     navigator.clipboard.writeText(copy).then(
       () => window.alert("Copied to clipboard!"),
@@ -651,7 +652,7 @@ const Home: NextPage = () => {
   }
 
   function isInRange(letter: string) {
-    const RANGE = 3;
+    const RANGE = 2;
     const isGuessed = options.includes(letter);
     const answerIndex = LETTERS.indexOf(answer);
     const letterIndex = LETTERS.indexOf(letter);
@@ -670,7 +671,7 @@ const Home: NextPage = () => {
 
     setTimeout(() => {
       setIsSuccessModalOpen(true);
-    }, 2000);
+    }, 1500);
   }
 
   /* Local storage management */
@@ -733,8 +734,8 @@ const Home: NextPage = () => {
   /* Initial styling */
   React.useEffect(() => {
     /* Default to dark theme to match the user's system preferences */
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      dispatch({ type: "theme", theme: "dark" });
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+      dispatch({ type: "theme", theme: "light" });
     }
 
     /* Prevent FOUC on first page load */
@@ -745,7 +746,7 @@ const Home: NextPage = () => {
     <Container>
       <Tooltip.Provider delayDuration={64} skipDelayDuration={250}>
         <Head>
-          <title>Letterle - A letter guessing game</title>
+          <title>Find Phunk - 26 card Monte</title>
           <meta name="description" content="A daily letter guessing game" />
           <link rel="icon" href="/favicon.ico" />
 
@@ -796,59 +797,24 @@ const Home: NextPage = () => {
               </AboutClose>
 
               <ContentContainer>
-                <h2>Welcome to Letterle!</h2>
+                <h2>Welcome to Find Phunk!</h2>
 
                 <p>
-                  The aim of the game is to find the hidden letter in as few
-                  attempts as possible!
+                  Try to guess which letter I am hiding behind.
                 </p>
 
-                <p>
-                  After each guess, the color of the letter will change to show
-                  if you correctly guessed the letter.
-                </p>
+                <p>You can guess by clicking the letters or using your keyboard.</p>
 
-                <p>
-                  The game will end when you successfully uncover the hidden
-                  letter.
-                </p>
+                <p>I am very very schneaky.</p>
 
                 <Divider decorative />
 
                 <Status>
-                  <Button
-                    disabled
-                    css={{
-                      flex: "0 1 auto",
-                      background: "$grass10",
-                      color: "$gray1",
-                    }}
-                  >
-                    A
+                  <Button disabled css={{ flex: "0 1 auto" }}>
+                    L
                   </Button>
 
-                  <p>
-                    The letter <span style={{ fontWeight: 600 }}>A</span> is the
-                    correct letter!
-                  </p>
-                </Status>
-
-                <Status>
-                  <Button
-                    disabled
-                    css={{
-                      flex: "0 1 auto",
-                      background: "$yellow9",
-                      color: "$gray1",
-                    }}
-                  >
-                    B
-                  </Button>
-
-                  <p>
-                    The letter <span style={{ fontWeight: 600 }}>B</span> is
-                    within three characters of the correct letter
-                  </p>
+                  <p>You haven&apos;t looked here</p>
                 </Status>
 
                 <Status>
@@ -860,34 +826,57 @@ const Home: NextPage = () => {
                       color: "$gray2",
                     }}
                   >
-                    C
+                    G
                   </Button>
 
-                  <p>
-                    The letter <span style={{ fontWeight: 600 }}>C</span> is an
-                    incorrect guess
-                  </p>
+                  <p>I&apos;m nowhere near</p>
                 </Status>
 
                 <Status>
-                  <Button disabled css={{ flex: "0 1 auto" }}>
-                    D
+                  <Button
+                    disabled
+                    css={{
+                      flex: "0 1 auto",
+                      background: "$yellow9",
+                      color: "$gray1",
+                    }}
+                  >
+                    T
                   </Button>
 
-                  <p>
-                    The letter <span style={{ fontWeight: 600 }}>D</span> has
-                    not yet been selected
-                  </p>
+                  <p>You&apos;re getting close</p>
+                </Status>
+
+                <Status>
+                  <Button
+                    disabled
+                    css={{
+                      flex: "0 1 auto",
+                      background: "$grass10",
+                      color: "$gray1",
+                      width: "44px",
+                      height: "44px",
+                    }}
+                  >
+                    <Image
+                      src="/images/ooft.png"
+                      alt=""
+                      width="100%"
+                      height="100%"
+                    />
+                  </Button>
+
+                  <p>You found me!</p>
                 </Status>
 
                 <Divider decorative />
 
-                <p>A new letter will be available each day!</p>
+                <p>I hide somewhere new every day!</p>
               </ContentContainer>
             </AboutContent>
           </Popover.Root>
 
-          <h1>Letterle</h1>
+          <h1>Find Phunk</h1>
 
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -1002,15 +991,13 @@ const Home: NextPage = () => {
               <SuccessAreaRoot>
                 <SuccessAreaViewport>
                   <SuccessSection>
-                    <Dialog.Title>Congratulations</Dialog.Title>
+                    <Dialog.Title>You found me!</Dialog.Title>
 
-                    <Dialog.Description>
-                      You have solved todays puzzle!
-                    </Dialog.Description>
+                    <Dialog.Description>GGEZ!</Dialog.Description>
                   </SuccessSection>
 
                   <ShareButton onClick={handleShare}>
-                    Share <Share1Icon width={24} height={24} />
+                    Share my location <Share1Icon width={24} height={24} />
                   </ShareButton>
 
                   <Divider decorative />
