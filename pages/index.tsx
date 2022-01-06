@@ -651,7 +651,7 @@ const Home: NextPage = () => {
 
           <link
             rel="preload"
-            href="/fonts/Lato-Semibold.ttf"
+            href="/fonts/Lato-SemiBold.ttf"
             as="font"
             crossOrigin=""
           />
