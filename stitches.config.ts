@@ -112,10 +112,13 @@ export const globalStyles = globalCss({
   html: { height: "100%" },
   body: {
     height: "100%",
-    background: "linear-gradient(to bottom,$gray1 0%, $gray2 97.5%)",
+    background: "$gray2",
     fontFamily: "Lato",
     lineHeight: "1.5",
     "-webkit-font-smoothing": "antialiased",
+  },
+  'div#__next': {
+    height: '100%',
   },
   "h1,h2,h3,h4,h5,h6": {
     fontFamily: "Montserrat",

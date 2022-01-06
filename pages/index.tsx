@@ -161,7 +161,7 @@ const Container = styled("div", {
   display: "flex",
   flexFlow: "column",
   padding: "0 1rem",
-  height: "100vh",
+  minHeight: "100%",
   minWidth: "320px",
   maxWidth: "600px",
   margin: "0 auto",
@@ -297,6 +297,15 @@ const Social = styled("div", {
 
 const Link = styled("a", {
   textDecoration: "none",
+  color: "$blue11",
+
+  "&:hover": {
+    color: "$blue12",
+  },
+});
+
+const SocialLink = styled(Link, {
+  display: "flex",
   color: "$gray11",
 
   "&:hover": {
@@ -430,11 +439,8 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
     case "ready":
       return { ...state, ...data, status: "loaded" };
     case "success":
-      const updatedHistory = [...state.history, state.attempts];
-
       const updatedState: S = {
         ...state,
-        history: updatedHistory,
         status: "complete",
       };
 
@@ -443,18 +449,28 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
       const isLetter = LETTERS.includes(guess);
       const isGuessed = state.options.includes(guess);
       const isComplete = state.status === "complete";
+      const isAnswer = guess === state.answer;
 
       if (!isLetter || isGuessed || isComplete) {
         return state;
       }
 
-      const newOptions = [...state.options];
-      newOptions[state.attempts] = guess;
+      const attempts = state.attempts + 1;
+
+      const options = [...state.options];
+      options.push(guess);
+
+      const history = [...state.history];
+
+      if (isAnswer) {
+        history.push(state.attempts);
+      }
 
       return {
         ...state,
-        attempts: state.attempts + 1,
-        options: newOptions,
+        attempts,
+        options,
+        history,
       };
     default:
       throw new Error(`Action type ${type} not recognised`);
@@ -698,6 +714,7 @@ const Home: NextPage = () => {
                   >
                     A
                   </Button>
+
                   <p>
                     The letter <span style={{ fontWeight: 600 }}>A</span> is the
                     correct letter!
@@ -712,6 +729,7 @@ const Home: NextPage = () => {
                   >
                     B
                   </Button>
+
                   <p>
                     The letter <span style={{ fontWeight: 600 }}>B</span> is an
                     incorrect guess, and is not the correct letter
@@ -725,6 +743,7 @@ const Home: NextPage = () => {
                   >
                     C
                   </Button>
+
                   <p>
                     The letter <span style={{ fontWeight: 600 }}>C</span> has
                     not yet been guessed
@@ -785,9 +804,6 @@ const Home: NextPage = () => {
               href="https://www.powerlanguage.co.uk/wordle/"
               target="_blank"
               rel="noopener noreferrer"
-              css={{
-                color: "$blue11",
-              }}
             >
               Wordle
             </Link>
@@ -796,14 +812,14 @@ const Home: NextPage = () => {
           <Social>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                <Link
+                <SocialLink
                   href="https://twitter.com/phunkren"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <TwitterLogoIcon width={24} height={24} />
                   <VisuallyHidden>Twitter</VisuallyHidden>
-                </Link>
+                </SocialLink>
               </Tooltip.Trigger>
 
               <Tooltip.Content className={tooltipContent()}>
@@ -813,14 +829,14 @@ const Home: NextPage = () => {
 
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                <Link
+                <SocialLink
                   href="https://github.com/phunkren/letterle"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <GitHubLogoIcon width={24} height={24} />
                   <VisuallyHidden>GitHub</VisuallyHidden>
-                </Link>
+                </SocialLink>
               </Tooltip.Trigger>
 
               <Tooltip.Content className={tooltipContent()}>
