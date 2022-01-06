@@ -116,7 +116,6 @@ export const globalStyles = globalCss({
     fontFamily: "Lato",
     lineHeight: "1.5",
     "-webkit-font-smoothing": "antialiased",
-    visibility: "hidden",
   },
   "body.loaded": {
     visibility: "visible",
