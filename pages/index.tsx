@@ -466,7 +466,7 @@ const Home: NextPage = () => {
   const [theme, setTheme] = React.useState<Theme>(darkTheme);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const { status, answer, options, history, attempts, expires } = state;
-  const latestGuess = options.filter(Boolean).at(-1);
+  const latestGuess = options?.filter(Boolean)?.at(-1);
 
   /* Statistics */
   const sortedHistory = history.sort();
