@@ -463,7 +463,7 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
       const history = [...state.history];
 
       if (isAnswer) {
-        history.push(state.attempts);
+        history.push(attempts);
       }
 
       return {
