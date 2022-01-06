@@ -86,7 +86,8 @@ export const {
     space: {
       1: "1rem",
       2: "2rem",
-      3: "3rem",
+      3: "2.5rem",
+      4: "4rem",
     },
   },
 });
@@ -114,7 +115,7 @@ export const globalStyles = globalCss({
     height: "100%",
     background: "$gray2",
     fontFamily: "Lato",
-    lineHeight: "1.5",
+    lineHeight: "1",
     "-webkit-font-smoothing": "antialiased",
   },
   "body.loaded": {

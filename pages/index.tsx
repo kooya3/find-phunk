@@ -7,7 +7,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
 import * as Popover from "@radix-ui/react-popover";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Cross2Icon,
@@ -123,10 +122,6 @@ const CHART_COLORS = [
  * TYPES
  */
 
-type Theme = typeof lightTheme | typeof darkTheme | undefined;
-
-type ChartData = Record<string, number>;
-
 type S = {
   status: "idle" | "loading" | "loaded" | "complete";
   answer: string;
@@ -134,16 +129,18 @@ type S = {
   attempts: number;
   options: string[];
   history: number[];
+  theme: "light" | "dark";
 };
 
 type A = {
-  type: "init" | "ready" | "guess" | "success";
+  type: "init" | "ready" | "guess" | "success" | "theme";
   guess?: string;
   data?: Partial<S>;
+  theme?: "light" | "dark";
 };
 
 /*****************************
- * STYLES
+ * ANIMATIONS
  */
 
 const scaleIn = keyframes({
@@ -156,6 +153,10 @@ const rotateX = keyframes({
   "50%": { transform: "scaleX(0)" },
   "100%": { transform: "scaleX(1)" },
 });
+
+/*****************************
+ * STYLES
+ */
 
 const Container = styled("div", {
   display: "flex",
@@ -208,7 +209,7 @@ const AboutContent = styled(Popover.Content, {
 });
 
 const Divider = styled(Separator.Root, {
-  width: "100%",
+  width: "75%",
   height: "1px",
   backgroundColor: "$gray6",
 });
@@ -222,7 +223,7 @@ const AboutClose = styled(Popover.Close, {
 const ContentContainer = styled("div", {
   display: "flex",
   flexFlow: "column",
-  gap: "$space$1",
+  gap: "$space$2",
 });
 
 const ThemeButton = styled("button", {
@@ -323,28 +324,27 @@ const Status = styled("div", {
 });
 
 const SuccessOverlay = styled(Dialog.Overlay, {
-  background: "$colors$overlay",
   position: "fixed",
   inset: "0",
+  display: "grid",
+  placeItems: "center",
+  overflowY: "auto",
+  background: "$colors$overlay",
 });
 
 const SuccessContent = styled(Dialog.Content, {
-  boxShadow: "0 4px 23px 0 rgb(0 0 0 / 20%)",
-  position: "fixed",
-  width: "calc(100% - $space$2)",
-  maxWidth: "600px",
-  height: "calc(100% - $space$2)",
-  maxHeight: "800px",
-  background: "$gray2",
-  color: "$gray12",
-  top: "25%",
-  left: "50%",
-  transform: "translate(-50%, -25%)",
+  position: "relative",
   display: "flex",
   flexFlow: "column",
   alignItems: "center",
-  gap: "$space$2",
-  padding: "$space$3 $space$2",
+  gap: "$space$3",
+  width: "100%",
+  maxWidth: "600px",
+  boxShadow: "0 4px 23px 0 rgb(0 0 0 / 20%)",
+  background: "$gray2",
+  color: "$gray12",
+  margin: "$space$4 $space$2",
+  padding: "$space$4 $space$2",
 
   "& h3": {
     color: "$gray11",
@@ -356,6 +356,12 @@ const SuccessClose = styled(Dialog.Close, {
   position: "absolute",
   top: "$space$1",
   right: "$space$1",
+  zIndex: "1",
+  color: "$gray11",
+
+  "&:hover": {
+    color: "$gray12",
+  },
 });
 
 const Statistics = styled("div", {
@@ -385,8 +391,9 @@ const ShareButton = styled("button", {
   alignItems: "center",
   padding: "$space$1 $space$2",
   background: "$grass9",
-  color: "white",
-  fontSize: "1.5rem",
+  color: "$gray1",
+  fontSize: "1.25rem",
+  fontWeight: 600,
   borderRadius: "4px",
 
   "&:hover": {
@@ -403,7 +410,7 @@ const ShareButton = styled("button", {
 });
 
 const Timer = styled("span", {
-  padding: "0 $space$2 $space$1",
+  padding: "0 $space$2",
   fontSize: "2rem",
   fontWeight: "700",
 });
@@ -430,21 +437,20 @@ const initialState: S = {
   attempts: 0,
   history: [],
   expires: (() => endOfDay(new Date()))(),
+  theme: "light",
 };
 
-const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
+const reducer = (
+  state: S,
+  { type, data = {}, guess = "", theme = "light" }: A
+): S => {
   switch (type) {
     case "init":
       return { ...state, status: "loading" };
     case "ready":
       return { ...state, ...data, status: "loaded" };
     case "success":
-      const updatedState: S = {
-        ...state,
-        status: "complete",
-      };
-
-      return updatedState;
+      return { ...state, status: "complete" };
     case "guess":
       const isLetter = LETTERS.includes(guess);
       const isGuessed = state.options.includes(guess);
@@ -461,10 +467,7 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
       options.push(guess);
 
       const history = [...state.history];
-
-      if (isAnswer) {
-        history.push(attempts);
-      }
+      isAnswer && history.push(attempts);
 
       return {
         ...state,
@@ -472,6 +475,8 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
         options,
         history,
       };
+    case "theme":
+      return { ...state, theme };
     default:
       throw new Error(`Action type ${type} not recognised`);
   }
@@ -479,10 +484,9 @@ const reducer = (state: S, { type, guess = "", data = {} }: A): S => {
 
 const Home: NextPage = () => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const [theme, setTheme] = React.useState<Theme>(darkTheme);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
-  const { status, answer, options, history, attempts, expires } = state;
-  const latestGuess = options.length ? options.filter(Boolean).at(-1) : null;
+  const { status, answer, options, history, attempts, expires, theme } = state;
+  const latestGuess = options.length ? options.at(-1) : null;
 
   /* Statistics */
   const sortedHistory = history.sort();
@@ -499,7 +503,7 @@ const Home: NextPage = () => {
     completed,
   }: CountdownRenderProps) => {
     return completed ? (
-      <p> New Letterer available! Refresh to get started!</p>
+      <p> New Letterle available! Refresh to get started!</p>
     ) : (
       <Timer>
         {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
@@ -508,10 +512,10 @@ const Home: NextPage = () => {
   };
 
   /* Chart */
-  const historyAccumulator: ChartData = history.reduce((acc, cur) => {
+  const historyAccumulator = history.reduce((acc, cur) => {
     acc[`${cur}`] = ++acc[`${cur}`] || 1;
     return acc;
-  }, {} as ChartData);
+  }, {} as Record<string, number>);
 
   const chartData = Object.keys(historyAccumulator).map((key) => ({
     name: key,
@@ -545,10 +549,10 @@ const Home: NextPage = () => {
   };
 
   function handleThemeChange() {
-    if (theme !== darkTheme) {
-      setTheme(darkTheme);
+    if (theme === "light") {
+      dispatch({ type: "theme", theme: "dark" });
     } else {
-      setTheme(lightTheme);
+      dispatch({ type: "theme", theme: "light" });
     }
   }
 
@@ -632,18 +636,25 @@ const Home: NextPage = () => {
 
   /* Theming */
   React.useEffect(() => {
-    if (theme === lightTheme) {
+    if (theme === "light") {
       document.body.classList.add(lightTheme);
       document.body.classList.remove(darkTheme);
     }
 
-    if (theme === darkTheme) {
+    if (theme === "dark") {
       document.body.classList.add(darkTheme);
       document.body.classList.remove(lightTheme);
     }
   }, [theme]);
 
+  /* Initial styling */
   React.useEffect(() => {
+    /* Default to dark theme to match the user's system preferences */
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      dispatch({ type: "theme", theme: "dark" });
+    }
+
+    /* Prevent FOUC on first page load */
     document.body.classList.add("loaded");
   }, []);
 
@@ -692,7 +703,7 @@ const Home: NextPage = () => {
               </Tooltip.Content>
             </Tooltip.Root>
 
-            <AboutContent className={theme}>
+            <AboutContent>
               <AboutClose>
                 <Cross2Icon width={24} height={24} />
                 <VisuallyHidden>Close</VisuallyHidden>
@@ -766,7 +777,7 @@ const Home: NextPage = () => {
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
               <ThemeButton onClick={handleThemeChange}>
-                {theme === lightTheme ? (
+                {theme === "light" ? (
                   <SunIcon width={24} height={24} />
                 ) : (
                   <MoonIcon width={24} height={24} />
@@ -855,64 +866,80 @@ const Home: NextPage = () => {
           onOpenChange={() => setIsSuccessModalOpen(!isSuccessModalOpen)}
         >
           <Dialog.Portal>
-            <SuccessOverlay />
+            <SuccessOverlay>
+              <SuccessContent>
+                <SuccessClose>
+                  <Cross2Icon width={24} height={24} />
+                  <VisuallyHidden>Close</VisuallyHidden>
+                </SuccessClose>
 
-            <SuccessContent>
-              <SuccessClose>
-                <Cross2Icon width={24} height={24} />
-                <VisuallyHidden>Close</VisuallyHidden>
-              </SuccessClose>
+                <Dialog.Title>Congratulations!</Dialog.Title>
 
-              <Dialog.Title>Congratulations!</Dialog.Title>
+                <Dialog.Description>
+                  You have solved todays puzzle
+                </Dialog.Description>
 
-              <Dialog.Description />
+                <Divider decorative />
 
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    label={chartLabel}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius="100%"
-                    dataKey="value"
-                  >
-                    {chartData.map((_, index) => (
-                      <Cell
-                        key={CHART_COLORS[index % CHART_COLORS.length]}
-                        fill={CHART_COLORS[index % CHART_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+                <h3>Statistics</h3>
 
-              <Statistics>
-                <Statistic>
-                  <div>{attempts}</div>
-                  <p>Today</p>
-                </Statistic>
-                <Statistic>
-                  <div>{averageResult}</div>
-                  <p>Average</p>
-                </Statistic>
-                <Statistic>
-                  <div>{bestResult}</div>
-                  <p>Best</p>
-                </Statistic>
-              </Statistics>
+                <Statistics>
+                  <Statistic>
+                    <div>{attempts}</div>
+                    <p>Today</p>
+                  </Statistic>
+                  <Statistic>
+                    <div>{averageResult}</div>
+                    <p>Average</p>
+                  </Statistic>
+                  <Statistic>
+                    <div>{bestResult}</div>
+                    <p>Best</p>
+                  </Statistic>
+                </Statistics>
 
-              <Divider decorative />
+                <Divider decorative />
 
-              <h3>Next available</h3>
+                <h3>Distribution</h3>
 
-              <Countdown date={expires} renderer={countdownRenderer} />
+                <div
+                  style={{
+                    minHeight: "200px",
+                  }}
+                >
+                  <PieChart height={250} width={250}>
+                    <Pie
+                      data={chartData}
+                      label={chartLabel}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius="100%"
+                      dataKey="value"
+                    >
+                      {chartData.map((_, index) => (
+                        <Cell
+                          key={CHART_COLORS[index % CHART_COLORS.length]}
+                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </div>
 
-              <ShareButton onClick={handleShare}>
-                Share <Share1Icon width={24} height={24} />
-              </ShareButton>
-            </SuccessContent>
+                <Divider decorative />
+
+                <h3>Next available</h3>
+
+                <Countdown date={expires} renderer={countdownRenderer} />
+
+                <Divider decorative />
+
+                <ShareButton onClick={handleShare}>
+                  Share <Share1Icon width={24} height={24} />
+                </ShareButton>
+              </SuccessContent>
+            </SuccessOverlay>
           </Dialog.Portal>
         </Dialog.Root>
       </Tooltip.Provider>
