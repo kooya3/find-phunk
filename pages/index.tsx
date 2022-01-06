@@ -572,8 +572,7 @@ const Home: NextPage = () => {
       }
 
       if (options.includes(letter)) {
-        const isInRange = getClose(letter);
-        return isInRange ? "🟨" : "🔳";
+        return isInRange(letter) ? "🟨" : "🔳";
       }
 
       return theme === lightTheme ? "⬜" : "⬛";
@@ -592,12 +591,13 @@ const Home: NextPage = () => {
     );
   }
 
-  function getClose(letter: string) {
+  function isInRange(letter: string) {
+    const RANGE = 3;
     const isGuessed = options.includes(letter);
     const answerIndex = LETTERS.indexOf(answer);
     const letterIndex = LETTERS.indexOf(letter);
     const isInRange =
-      letterIndex >= answerIndex - 5 && letterIndex <= answerIndex + 5;
+      letterIndex >= answerIndex - RANGE && letterIndex <= answerIndex + RANGE;
 
     return isGuessed && isInRange;
   }
@@ -771,7 +771,7 @@ const Home: NextPage = () => {
 
                   <p>
                     The letter <span style={{ fontWeight: 600 }}>B</span> is
-                    within five characters of the correct letter
+                    within three characters of the correct letter
                   </p>
                 </Status>
 
@@ -835,7 +835,7 @@ const Home: NextPage = () => {
                 key={letter}
                 disabled={status === "complete"}
                 aria-disabled={options.includes(letter)}
-                data-almost={getClose(letter)}
+                data-almost={isInRange(letter)}
                 data-correct={status === "complete" && answer === letter}
                 onClick={() => dispatch({ type: "guess", guess: letter })}
               >
