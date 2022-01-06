@@ -643,6 +643,10 @@ const Home: NextPage = () => {
     }
   }, [theme]);
 
+  React.useEffect(() => {
+    document.body.classList.add("loaded");
+  }, []);
+
   return (
     <Container>
       <Tooltip.Provider delayDuration={64} skipDelayDuration={250}>
