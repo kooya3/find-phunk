@@ -133,7 +133,7 @@ type S = {
 };
 
 type A = {
-  type: "init" | "ready" | "guess" | "success" | "theme";
+  type: "init" | "ready" | "guess" | "success" | "theme" | "tutorial";
   guess?: string;
   data?: Partial<S>;
   theme?: "light" | "dark";
@@ -204,6 +204,7 @@ const AboutContent = styled(Popover.Content, {
   padding: "$space$2",
   borderRadius: "4px",
   boxShadow: "rgb(0, 0, 0, .18) 0px 2px 4px",
+  animation: `${scaleIn} 320ms cubic-bezier(0.16, 1, 0.3, 1)`,
   background: "$gray2",
   color: "$gray12",
 });
@@ -345,6 +346,7 @@ const SuccessContent = styled(Dialog.Content, {
   color: "$gray12",
   margin: "$space$4 $space$2",
   padding: "$space$4 $space$2",
+  animation: `${scaleIn} 320ms cubic-bezier(0.16, 1, 0.3, 1)`,
 
   "& h3": {
     color: "$gray11",
@@ -484,6 +486,7 @@ const reducer = (
 
 const Home: NextPage = () => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [isTutorialOpen, setIsTutorialOpen] = React.useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
   const { status, answer, options, history, attempts, expires, theme } = state;
   const latestGuess = options.length ? options.at(-1) : null;
@@ -599,6 +602,7 @@ const Home: NextPage = () => {
       /* If no local data exists, set it with the initial ui state */
       if (!localData) {
         window.localStorage.setItem("localData", JSON.stringify(initialState));
+        setIsTutorialOpen(true);
         dispatch({ type: "ready" });
         return;
       }
@@ -689,7 +693,10 @@ const Home: NextPage = () => {
         </Head>
 
         <Header>
-          <Popover.Root>
+          <Popover.Root
+            open={isTutorialOpen}
+            onOpenChange={() => setIsTutorialOpen(!isTutorialOpen)}
+          >
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <AboutButton>
