@@ -628,13 +628,13 @@ const Home: NextPage = () => {
 
   /* Global keyboard events */
   React.useEffect(() => {
-    const handleKeyUp = (e: KeyboardEvent) =>
+    const handleKeyPress = (e: KeyboardEvent) =>
       dispatch({ type: "guess", guess: e.key });
 
-    window.addEventListener("keyup", handleKeyUp, false);
+    window.addEventListener("keeypress", handleKeyPress, false);
 
     return () => {
-      window.addEventListener("keyup", handleKeyUp, false);
+      window.addEventListener("keeypress", handleKeyPress, false);
     };
   }, []);
 
