@@ -330,6 +330,28 @@ const Button = styled("button", {
   },
 });
 
+const PreviewButton = styled(Button, {
+  width: "60px",
+
+  "@supports not (aspect-ratio: auto)": {
+    paddingTop: 0,
+    height: "60px",
+    position: "static",
+  },
+
+  "& > *": {
+    "@supports not (aspect-ratio: auto)": {
+      position: "static",
+      transform: "translate(0, 0)",
+      left: "auto",
+      top: "auto",
+      width: "auto",
+      maxWidth: "100%",
+      height: "auto",
+    },
+  },
+});
+
 const Footer = styled("footer", {
   display: "flex",
   justifyContent: "space-between",
@@ -846,67 +868,45 @@ const Home: NextPage = () => {
                 <h3>Guide</h3>
 
                 <Status>
-                  <Button
-                    disabled
-                    css={{
-                      width: "60px",
-                      height: "60px",
-                      maxWidth: "60px",
-                      maxHeight: "60px",
-                    }}
-                  >
-                    L
-                  </Button>
+                  <PreviewButton disabled>L</PreviewButton>
 
                   <p>You haven&apos;t looked here</p>
                 </Status>
 
                 <Status>
-                  <Button
+                  <PreviewButton
                     disabled
                     css={{
                       background: "$gray9",
                       color: "$gray2",
-                      width: "60px",
-                      height: "60px",
-                      maxWidth: "60px",
-                      maxHeight: "60px",
                     }}
                   >
                     G
-                  </Button>
+                  </PreviewButton>
 
                   <p>I&apos;m nowhere near</p>
                 </Status>
 
                 <Status>
-                  <Button
+                  <PreviewButton
                     disabled
                     css={{
                       background: "$yellow9",
                       color: "$gray1",
-                      width: "60px",
-                      height: "60px",
-                      maxWidth: "60px",
-                      maxHeight: "60px",
                     }}
                   >
                     T
-                  </Button>
+                  </PreviewButton>
 
                   <p>You&apos;re getting close</p>
                 </Status>
 
                 <Status>
-                  <Button
+                  <PreviewButton
                     disabled
                     css={{
                       background: "$grass10",
                       color: "$gray1",
-                      width: "60px",
-                      height: "60px",
-                      maxWidth: "60px",
-                      maxHeight: "60px",
                     }}
                   >
                     <Image
@@ -915,7 +915,7 @@ const Home: NextPage = () => {
                       width="100%"
                       height="100%"
                     />
-                  </Button>
+                  </PreviewButton>
 
                   <p>You found me!</p>
                 </Status>
