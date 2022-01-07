@@ -504,12 +504,12 @@ const initialState: S = {
   attempts: 0,
   history: [],
   expires: (() => endOfDay(new Date()))(),
-  theme: "dark",
+  theme: "light",
 };
 
 const reducer = (
   state: S,
-  { type, data = {}, guess = "", theme = "dark" }: A
+  { type, data = {}, guess = "", theme = "light" }: A
 ): S => {
   switch (type) {
     case "init":
@@ -681,11 +681,19 @@ const Home: NextPage = () => {
     if (status === "loading") {
       const localData = window.localStorage.getItem("localData");
 
-      /* If no local data exists, set it with the initial ui state */
       if (!localData) {
+        /* If no local data exists, set it with the initial ui state */
         window.localStorage.setItem("localData", JSON.stringify(initialState));
+
+        /* Default to dark theme to match the user's system preferences */
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          dispatch({ type: "theme", theme: "dark" });
+        }
+
         setIsTutorialOpen(true);
+
         dispatch({ type: "ready" });
+
         return;
       }
 
@@ -735,11 +743,6 @@ const Home: NextPage = () => {
 
   /* Initial styling */
   React.useEffect(() => {
-    /* Default to dark theme to match the user's system preferences */
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-      dispatch({ type: "theme", theme: "light" });
-    }
-
     /* Prevent FOUC on first page load */
     document.body.classList.add("loaded");
   }, []);
