@@ -686,7 +686,7 @@ const Home: NextPage = () => {
     });
 
     const title = `Find Phunk  #${history.length}  ${attempts}/${KEYBOARD_LAYOUT.length}`;
-    const stats = `Average (${averageResult})  |  Personal Best (${bestResult})`;
+    const stats = `Average ( ${averageResult} )  |  Personal Best ( ${bestResult} )`;
     const rowOne = squareKeys.slice(0, 10).join(" ");
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
