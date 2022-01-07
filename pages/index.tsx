@@ -266,7 +266,6 @@ const ThemeButton = styled("button", {
 });
 
 const Button = styled("button", {
-  flex: "0 1 calc(20% - 8px)",
   position: "relative",
   aspectRatio: 1,
   fontSize: "1.5rem",
@@ -847,7 +846,15 @@ const Home: NextPage = () => {
                 <h3>Guide</h3>
 
                 <Status>
-                  <Button disabled>L</Button>
+                  <Button
+                    disabled
+                    css={{
+                      width: "60px",
+                      height: "60px",
+                    }}
+                  >
+                    L
+                  </Button>
 
                   <p>You haven&apos;t looked here</p>
                 </Status>
@@ -858,6 +865,8 @@ const Home: NextPage = () => {
                     css={{
                       background: "$gray9",
                       color: "$gray2",
+                      width: "60px",
+                      height: "60px",
                     }}
                   >
                     G
@@ -872,6 +881,8 @@ const Home: NextPage = () => {
                     css={{
                       background: "$yellow9",
                       color: "$gray1",
+                      width: "60px",
+                      height: "60px",
                     }}
                   >
                     T
@@ -886,6 +897,8 @@ const Home: NextPage = () => {
                     css={{
                       background: "$grass10",
                       color: "$gray1",
+                      width: "60px",
+                      height: "60px",
                     }}
                   >
                     <Image
