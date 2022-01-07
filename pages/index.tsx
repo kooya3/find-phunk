@@ -851,6 +851,8 @@ const Home: NextPage = () => {
                     css={{
                       width: "60px",
                       height: "60px",
+                      maxWidth: "60px",
+                      maxHeight: "60px",
                     }}
                   >
                     L
@@ -867,6 +869,8 @@ const Home: NextPage = () => {
                       color: "$gray2",
                       width: "60px",
                       height: "60px",
+                      maxWidth: "60px",
+                      maxHeight: "60px",
                     }}
                   >
                     G
@@ -883,6 +887,8 @@ const Home: NextPage = () => {
                       color: "$gray1",
                       width: "60px",
                       height: "60px",
+                      maxWidth: "60px",
+                      maxHeight: "60px",
                     }}
                   >
                     T
@@ -899,6 +905,8 @@ const Home: NextPage = () => {
                       color: "$gray1",
                       width: "60px",
                       height: "60px",
+                      maxWidth: "60px",
+                      maxHeight: "60px",
                     }}
                   >
                     <Image
