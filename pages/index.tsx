@@ -571,7 +571,9 @@ const Home: NextPage = () => {
     completed,
   }: CountdownRenderProps) => {
     return completed ? (
-      <p> New Find Phunk available! Refresh to get started!</p>
+      <p>
+        <q>And like that... he&apos;s gone!</q> (Refresh to start over)
+      </p>
     ) : (
       <Timer>
         {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
@@ -642,7 +644,7 @@ const Home: NextPage = () => {
     const rowOne = squareKeys.slice(0, 10).join(" ");
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
-    const site = "https://ajames.dev/letterle";
+    const site = "https://ajames.dev/findphunk";
     const copy = `${title}\n\n${stats}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n${site}`;
 
     navigator.clipboard.writeText(copy).then(
@@ -747,7 +749,10 @@ const Home: NextPage = () => {
       <Tooltip.Provider delayDuration={64} skipDelayDuration={250}>
         <Head>
           <title>Find Phunk - 26 card Monte</title>
-          <meta name="description" content="A daily letter guessing game" />
+          <meta
+            name="description"
+            content="A daily guessing game to find Phunkren"
+          />
           <link rel="icon" href="/favicon.ico" />
 
           <link
@@ -799,11 +804,11 @@ const Home: NextPage = () => {
               <ContentContainer>
                 <h2>Welcome to Find Phunk!</h2>
 
-                <p>
-                  Try to guess which letter I am hiding behind.
-                </p>
+                <p>Try to guess which letter I am hiding behind.</p>
 
-                <p>You can guess by clicking the letters or using your keyboard.</p>
+                <p>
+                  You can guess by clicking the letters or using your keyboard.
+                </p>
 
                 <p>I am very very schneaky.</p>
 
@@ -860,7 +865,7 @@ const Home: NextPage = () => {
                   >
                     <Image
                       src="/images/ooft.png"
-                      alt=""
+                      alt="Me!"
                       width="100%"
                       height="100%"
                     />
@@ -914,7 +919,7 @@ const Home: NextPage = () => {
                   <Image
                     className={imageContent()}
                     src="/images/ooft.png"
-                    alt=""
+                    alt="Me!"
                     width="100%"
                     height="100%"
                   />
@@ -992,8 +997,6 @@ const Home: NextPage = () => {
                 <SuccessAreaViewport>
                   <SuccessSection>
                     <Dialog.Title>You found me!</Dialog.Title>
-
-                    <Dialog.Description>GGEZ!</Dialog.Description>
                   </SuccessSection>
 
                   <ShareButton onClick={handleShare}>
