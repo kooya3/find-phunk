@@ -386,13 +386,12 @@ const SuccessOverlay = styled(Dialog.Overlay, {
 
 const SuccessContent = styled(Dialog.Content, {
   position: "fixed",
-  top: "0",
+  top: "$space$2",
+  bottom: "$space$2",
   left: "50%",
   transform: "translateX(-50%)",
-  margin: "$space$2",
-  width: "calc(100% - $space$4)",
+  width: "100%",
   maxWidth: "600px",
-  height: "calc(100% - $space$4)",
   boxShadow: "0 4px 23px 0 rgb(0 0 0 / 20%)",
   background: "$gray2",
   color: "$gray12",
@@ -840,7 +839,9 @@ const Home: NextPage = () => {
                   You can guess by pressing each letter or using your keyboard.
                 </p>
 
-                <p>The color of the tile will give you a clue to my whereabouts.</p>
+                <p>
+                  The color of the tile will give you a clue to my whereabouts.
+                </p>
 
                 <Divider decorative />
 
