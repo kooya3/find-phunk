@@ -454,11 +454,10 @@ const SuccessSection = styled("span", {
 
 const Statistics = styled("div", {
   display: "flex",
-  gap: "$space$2",
   textAlign: "center",
 
-  "@bp1": {
-    display: "none",
+  "& > * + *": {
+    marginLeft: "$space$2",
   },
 });
 
@@ -848,9 +847,7 @@ const Home: NextPage = () => {
                 <h3>Guide</h3>
 
                 <Status>
-                  <Button disabled css={{ flex: "0 1 auto" }}>
-                    L
-                  </Button>
+                  <Button disabled>L</Button>
 
                   <p>You haven&apos;t looked here</p>
                 </Status>
@@ -859,7 +856,6 @@ const Home: NextPage = () => {
                   <Button
                     disabled
                     css={{
-                      flex: "0 1 auto",
                       background: "$gray9",
                       color: "$gray2",
                     }}
@@ -874,7 +870,6 @@ const Home: NextPage = () => {
                   <Button
                     disabled
                     css={{
-                      flex: "0 1 auto",
                       background: "$yellow9",
                       color: "$gray1",
                     }}
@@ -889,11 +884,8 @@ const Home: NextPage = () => {
                   <Button
                     disabled
                     css={{
-                      flex: "0 1 auto",
                       background: "$grass10",
                       color: "$gray1",
-                      width: "44px",
-                      height: "44px",
                     }}
                   >
                     <Image
