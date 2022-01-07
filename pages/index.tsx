@@ -645,7 +645,7 @@ const Home: NextPage = () => {
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
     const site = "https://ajames.dev/find-phunk";
-    const copy = `${title}\n\n${stats}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n${site}`;
+    const copy = `${title}\n${stats}\n${site}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n`;
 
     navigator.clipboard.writeText(copy).then(
       () => window.alert("Copied to clipboard!"),
