@@ -836,7 +836,7 @@ const Home: NextPage = () => {
                 <p>Try to guess which letter I am hiding behind.</p>
 
                 <p>
-                  You can guess by pressing each letter or using your keyboard.
+                  You can guess by pressing a letter or using your keyboard.
                 </p>
 
                 <p>
@@ -845,7 +845,7 @@ const Home: NextPage = () => {
 
                 <Divider decorative />
 
-                <h3>Legend</h3>
+                <h3>Guide</h3>
 
                 <Status>
                   <Button disabled css={{ flex: "0 1 auto" }}>
