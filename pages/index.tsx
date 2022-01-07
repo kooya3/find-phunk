@@ -686,12 +686,11 @@ const Home: NextPage = () => {
     });
 
     const title = `Find Phunk  #${history.length}  ${attempts}/${KEYBOARD_LAYOUT.length}`;
-    const stats = `Average ( ${averageResult} )  |  Personal Best ( ${bestResult} )`;
     const rowOne = squareKeys.slice(0, 10).join(" ");
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
     const site = "https://ajames.dev/find-phunk";
-    const copy = `${title}\n${stats}\n${site}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n`;
+    const copy = `${title}\n${site}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n`;
 
     navigator.clipboard.writeText(copy).then(
       () => window.alert("Copied to clipboard!"),
