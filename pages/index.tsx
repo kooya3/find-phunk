@@ -167,11 +167,6 @@ const scaleIn = keyframes({
   "100%": { opacity: 1, transform: "scale(1)" },
 });
 
-const scaleSuccessIn = keyframes({
-  "0%": { transform: "scale(0.5) translateX(-50%)" },
-  "100%": { transform: "scale(1) translateX(-50%)" },
-});
-
 const rotateX = keyframes({
   "0%": { transform: "scaleX(1)" },
   "50%": { transform: "scaleX(0)" },
@@ -204,18 +199,21 @@ const Header = styled("header", {
 });
 
 const Main = styled("main", {
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "flex-start",
-  gap: "8px",
-  flexWrap: "wrap",
+  flex: "1 1 0%",
   marginTop: "$space$3",
   marginBottom: "$space$3",
-  marginLeft: "8px",
 
   "&[data-complete='true']": {
     pointerEvents: "none",
   },
+});
+
+const Grid = styled("div", {
+  display: "grid",
+  gridTemplateColumns: "repeat(5, 1fr)",
+  gridTemplateRows: "repeat(5, 1fr)",
+  gridColumnGap: "$space$1",
+  gridRowGap: "$space$1",
 });
 
 const AboutButton = styled(Popover.Trigger, {
@@ -242,7 +240,6 @@ const Divider = styled(Separator.Root, {
   width: "75%",
   height: "1px",
   backgroundColor: "$gray6",
-  margin: "$space$1 0",
 });
 
 const AboutClose = styled(Popover.Close, {
@@ -254,7 +251,10 @@ const AboutClose = styled(Popover.Close, {
 const ContentContainer = styled("div", {
   display: "flex",
   flexFlow: "column",
-  gap: "$space$2",
+
+  "& > * + *": {
+    marginTop: "$space$2",
+  },
 });
 
 const ThemeButton = styled("button", {
@@ -267,6 +267,7 @@ const ThemeButton = styled("button", {
 
 const Button = styled("button", {
   flex: "0 1 calc(20% - 8px)",
+  position: "relative",
   aspectRatio: 1,
   fontSize: "1.5rem",
   fontWeight: 600,
@@ -275,7 +276,27 @@ const Button = styled("button", {
   color: "$gray12",
   cursor: "pointer",
   transition: "color 200ms linear",
-  position: "relative",
+
+  "@supports not (aspect-ratio: auto)": {
+    paddingTop: "100%",
+    height: 0,
+    position: "relative",
+    overflow: "hidden",
+  },
+
+  "& > *": {
+    maxWidth: "100%",
+
+    "@supports not (aspect-ratio: auto)": {
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      left: "50%",
+      top: "50%",
+      width: "auto",
+      maxWidth: "100%",
+      height: "auto",
+    },
+  },
 
   "&:hover:not([aria-disabled='true'])": {
     background: "$gray4",
@@ -365,15 +386,15 @@ const SuccessOverlay = styled(Dialog.Overlay, {
 
 const SuccessContent = styled(Dialog.Content, {
   position: "fixed",
-  inset: "0 50%",
+  top: "0",
+  left: "50%",
   transform: "translateX(-50%)",
   margin: "$space$2",
-  width: "calc(100% - $space$2 * 2)",
+  width: "calc(100% - $space$4)",
   maxWidth: "600px",
-  height: "calc(100% - $space$2 * 2)",
+  height: "calc(100% - $space$4)",
   boxShadow: "0 4px 23px 0 rgb(0 0 0 / 20%)",
   background: "$gray2",
-  animation: `${scaleSuccessIn} 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards`,
   color: "$gray12",
 
   "@media screen and (min-height: 1100px)": {
@@ -396,8 +417,11 @@ const SuccessAreaViewport = styled(ScrollArea.Viewport, {
     display: "flex !important",
     flexFlow: "column",
     alignItems: "center",
-    gap: "$space$2",
     padding: "$space$4 $space$2",
+  },
+
+  "& > div > * + *": {
+    marginTop: "$space$2",
   },
 
   "& h3": {
@@ -421,9 +445,12 @@ const SuccessClose = styled(Dialog.Close, {
 const SuccessSection = styled("span", {
   display: "flex",
   flexFlow: "column",
-  gap: "$space$1",
   alignItems: "center",
   textAlign: "center",
+
+  "& > * + *": {
+    marginTop: "$space$1",
+  },
 });
 
 const Statistics = styled("div", {
@@ -453,7 +480,7 @@ const ShareButton = styled("button", {
   alignItems: "center",
   padding: "$space$1 $space$2",
   background: "$grass9",
-  color: "$gray1",
+  color: "black",
   fontSize: "1.25rem",
   fontWeight: 600,
   borderRadius: "4px",
@@ -805,17 +832,19 @@ const Home: NextPage = () => {
               </AboutClose>
 
               <ContentContainer>
-                <h2>Welcome to Find Phunk!</h2>
+                <h2>How to play</h2>
 
                 <p>Try to guess which letter I am hiding behind.</p>
 
                 <p>
-                  You can guess by clicking the letters or using your keyboard.
+                  You can guess by pressing each letter or using your keyboard.
                 </p>
 
-                <p>I am very very schneaky.</p>
+                <p>The color of the tile will give you a clue to my whereabouts.</p>
 
                 <Divider decorative />
+
+                <h3>Legend</h3>
 
                 <Status>
                   <Button disabled css={{ flex: "0 1 auto" }}>
@@ -910,27 +939,29 @@ const Home: NextPage = () => {
           </Main>
         ) : (
           <Main data-complete={status === "complete"}>
-            {LETTERS.map((letter) => (
-              <Button
-                key={letter}
-                aria-disabled={options.includes(letter)}
-                data-almost={isInRange(letter)}
-                data-correct={status === "complete" && answer === letter}
-                onClick={() => dispatch({ type: "guess", guess: letter })}
-              >
-                {status === "complete" && answer === letter ? (
-                  <Image
-                    className={imageContent()}
-                    src="/images/ooft.png"
-                    alt="Me!"
-                    width="100%"
-                    height="100%"
-                  />
-                ) : (
-                  <span>{letter.toUpperCase()}</span>
-                )}
-              </Button>
-            ))}
+            <Grid>
+              {LETTERS.map((letter) => (
+                <Button
+                  key={letter}
+                  aria-disabled={options.includes(letter)}
+                  data-almost={isInRange(letter)}
+                  data-correct={status === "complete" && answer === letter}
+                  onClick={() => dispatch({ type: "guess", guess: letter })}
+                >
+                  {status === "complete" && answer === letter ? (
+                    <Image
+                      className={imageContent()}
+                      src="/images/ooft.png"
+                      alt="Me!"
+                      width="100%"
+                      height="100%"
+                    />
+                  ) : (
+                    <span>{letter.toUpperCase()}</span>
+                  )}
+                </Button>
+              ))}
+            </Grid>
           </Main>
         )}
 
@@ -1003,7 +1034,7 @@ const Home: NextPage = () => {
                   </SuccessSection>
 
                   <ShareButton onClick={handleShare}>
-                    Share my location <Share1Icon width={24} height={24} />
+                    Share results <Share1Icon width={24} height={24} />
                   </ShareButton>
 
                   <Divider decorative />

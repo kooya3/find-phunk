@@ -115,6 +115,7 @@ export const globalStyles = globalCss({
     height: "100%",
     background: "$gray1",
     fontFamily: "Lato",
+    fontSize: "16px",
     lineHeight: "1",
     "-webkit-font-smoothing": "antialiased",
   },
@@ -127,6 +128,18 @@ export const globalStyles = globalCss({
   "h1,h2,h3,h4,h5,h6": {
     fontFamily: "Montserrat",
     letterSpacing: "2px",
+  },
+  h1: {
+    fontSize: "1.5rem",
+  },
+  h2: {
+    fontSize: "1.25rem",
+  },
+  h3: {
+    fontSize: "1rem",
+  },
+  p: {
+    lineHeight: 1.5,
   },
   button: {
     appearance: "none",
