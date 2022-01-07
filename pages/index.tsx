@@ -644,7 +644,7 @@ const Home: NextPage = () => {
     const rowOne = squareKeys.slice(0, 10).join(" ");
     const rowTwo = squareKeys.slice(10, 19).join(" ");
     const rowThree = squareKeys.slice(19).join(" ");
-    const site = "https://ajames.dev/findphunk";
+    const site = "https://ajames.dev/find-phunk";
     const copy = `${title}\n\n${stats}\n\n${rowOne}\n${rowTwo}\n${rowThree}\n\n${site}`;
 
     navigator.clipboard.writeText(copy).then(
