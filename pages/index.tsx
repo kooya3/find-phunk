@@ -699,7 +699,7 @@ const Home: NextPage = () => {
   }
 
   function isInRange(letter: string) {
-    const RANGE = 2;
+    const RANGE = 1;
     const isGuessed = options.includes(letter);
     const answerIndex = LETTERS.indexOf(answer);
     const letterIndex = LETTERS.indexOf(letter);
