@@ -1011,7 +1011,7 @@ const Home: NextPage = () => {
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <SocialLink
-                  href="https://github.com/phunkren/letterle"
+                  href="https://github.com/phunkren/find-phunk/blob/main/pages/index.tsx"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
